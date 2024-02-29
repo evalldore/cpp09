@@ -2,7 +2,7 @@ NAME			:= btc
 CPPFLAGS		:= -g -Wall -Wextra -Werror
 STD				:= -std=c++98
 SRCDIR			:= src/
-SRCS			:= main.cpp
+SRCS			:= main.cpp BitcoinExchange.cpp
 BINDIR			:= bin/
 HEADERS			:= include/
 OBJS			:= $(addprefix $(BINDIR), $(SRCS:.cpp=.o))
