@@ -15,30 +15,33 @@ static void splitLine(const std::string& str, std::string& key, double &value) {
 	size_t delimPos = str.find(',', 0);
 
 	key = str.substr(0, delimPos);
-	value = strtod(str.substr(delimPos).c_str(), &p);
+	value = strtod(str.substr(delimPos + 1).c_str(), &p);
 	if (*p)
 		value = NAN;
 }
 
-static void extractData(std::fstream& dataStream, std::map< std::string, std::vector<double> >& data) {
-	(void)data;
+static void validateData(const std::string& key, const double& value) {
+	
+}
+
+static void extractData(std::fstream& dataStream, std::map< std::string, double >& data) {
 	char	lineBuffer[BUFFER_SIZE];
 	std::string key;
 	double value;
 
 	while (!dataStream.getline(lineBuffer, BUFFER_SIZE, '\n').eof()) {
 		splitLine(lineBuffer, key, value);
-		std::cout << key << value << std::endl;
+		data[key] = value;
 	}
 }
 
 static int validateKeys(const std::string&	keysString) {
-	if (keysString == "date,exchange_rate\n")
+	if (keysString == "date,exchange_rate")
 		return SUCCES;
 	return FAILURE;
 }
 
-static int setupData(std::map< std::string, std::vector<double> >& data) {
+static int setupData(std::map< std::string, double >& data) {
 	(void)data;
 	std::fstream dataStream;
 	dataStream.open("data.csv", std::fstream::in);
@@ -73,7 +76,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Couldnt open input file" << std::endl;
 		return 1;
 	}
-	std::map< std::string, std::vector<double> > data;
+	std::map< std::string, double > data;
 	if (setupData(data) != 0) {
 		std::cerr << "Setting up data failure!" << std::endl;
 		return 1;
