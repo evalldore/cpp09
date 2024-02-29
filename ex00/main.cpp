@@ -2,34 +2,43 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstring>
 #include <exception>
 #include <map>
+#include <cmath>
 #define SUCCES 0
 #define FAILURE 1
-#define LINE_BUFFER 256
+#define BUFFER_SIZE 256
 
-static void extractKeys(const std::string& keysBuffer, std::vector<std::string>& keysList) {
-	size_t		pos = 0;
+static void splitLine(const std::string& str, std::string& key, double &value) {
+	char	*p;
+	size_t delimPos = str.find(',', 0);
 
-	while(true) {
-		size_t delimPos = keysBuffer.find(',', pos);
-		if (delimPos == std::string::npos) {
-			keysList.push_back(keysBuffer.substr(pos, keysBuffer.find('\n')));
-			break;
-		}
-		keysList.push_back(keysBuffer.substr(pos, delimPos));
-		pos = delimPos + 1;
+	key = str.substr(0, delimPos);
+	value = strtod(str.substr(delimPos).c_str(), &p);
+	if (*p)
+		value = NAN;
+}
+
+static void extractData(std::fstream& dataStream, std::map< std::string, std::vector<double> >& data) {
+	(void)data;
+	char	lineBuffer[BUFFER_SIZE];
+	std::string key;
+	double value;
+
+	while (!dataStream.getline(lineBuffer, BUFFER_SIZE, '\n').eof()) {
+		splitLine(lineBuffer, key, value);
+		std::cout << key << value << std::endl;
 	}
 }
 
-static int validateKeys(std::vector<std::string>&	keysList) {
-	if (keysList.size() > 2) return FAILURE;
-	if (keysList[0] == "date" && keysList[1] == "exchange_rate")
-		return (SUCCES);
-	return (FAILURE);
+static int validateKeys(const std::string&	keysString) {
+	if (keysString == "date,exchange_rate\n")
+		return SUCCES;
+	return FAILURE;
 }
 
-static int setupData(std::map< std::string, std::vector<float> >& data) {
+static int setupData(std::map< std::string, std::vector<double> >& data) {
 	(void)data;
 	std::fstream dataStream;
 	dataStream.open("data.csv", std::fstream::in);
@@ -37,18 +46,19 @@ static int setupData(std::map< std::string, std::vector<float> >& data) {
 		std::cerr << "Couldnt open data file" << std::endl;
 		return FAILURE;
 	}
-	char					keysBuffer[LINE_BUFFER];
-	std::vector<std::string>	keysVec;
+	char keysBuffer[BUFFER_SIZE];
+	std::vector<std::string> keysVec;
 
-	dataStream.getline(keysBuffer, LINE_BUFFER, '\n');
+	if (dataStream.getline(keysBuffer, BUFFER_SIZE, '\n').eof())
+		return FAILURE;
+	if (validateKeys(keysBuffer) == FAILURE)
+		return FAILURE;
 	try {
-		extractKeys(keysBuffer, keysVec);
+		extractData(dataStream, data);
 	} catch (std::exception& e) {
-		std::cout << "EXCEPTION" << e.what() << std::endl;
+		std::cerr << "EXCEPTION" << e.what() << std::endl;
 		return FAILURE;
 	}
-	if (validateKeys(keysVec) == FAILURE)
-		return FAILURE;
 	return SUCCES;
 }
 
@@ -63,7 +73,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Couldnt open input file" << std::endl;
 		return 1;
 	}
-	std::map< std::string, std::vector<float> > data;
+	std::map< std::string, std::vector<double> > data;
 	if (setupData(data) != 0) {
 		std::cerr << "Setting up data failure!" << std::endl;
 		return 1;
