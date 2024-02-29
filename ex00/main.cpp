@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	std::map< std::string, double > data;
-	if (setupData(data) != 0) {
+	if (setupData(data) != SUCCES) {
 		std::cerr << "Setting up data failure!" << std::endl;
 		return 1;
 	}
