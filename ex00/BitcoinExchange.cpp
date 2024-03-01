@@ -34,6 +34,16 @@ static void validateData(const std::string& key, const float& value) {
 	month = (unsigned int)atoi(monthStr.c_str());
 	day = (unsigned int)atoi(dayStr.c_str());
 	if ((month < 1 || month > 12) || (day < 1 || day > 31)) throw InvalidDateException();
+
+	if (month == 4 || month == 6 || month == 9 || month == 11) {
+		if (day > 30) throw InvalidDateException();
+	}
+
+	if (month == 2) {
+		bool isLeapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+		if ((isLeapYear && day > 29) || (!isLeapYear && day > 28)) throw InvalidDateException();
+	}
+
 	if (isnan(value)) throw InvalidValueException();
 }
 
