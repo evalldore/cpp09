@@ -27,4 +27,4 @@ class InvalidValueException : public std::exception {
 		virtual const char* what(void) const throw();
 };
 
-int setupData(std::map< std::string, double >& data);
+int setupData(std::map< std::string, float >& data);

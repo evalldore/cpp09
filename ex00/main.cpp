@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Couldnt open input file" << std::endl;
 		return 1;
 	}
-	std::map< std::string, double > data;
+	std::map< std::string, float > data;
 	if (setupData(data) != SUCCES) {
 		std::cerr << "Setting up data failure!" << std::endl;
 		return 1;

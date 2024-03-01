@@ -1,11 +1,11 @@
 #include "BitcoinExchange.hpp"
 
-static void splitLine(const std::string& str, std::string& key, double &value) {
+static void splitLine(const std::string& str, std::string& key, float &value) {
 	char	*p;
 	size_t delimPos = str.find(',', 0);
 
 	key = str.substr(0, delimPos);
-	value = strtod(str.substr(delimPos + 1).c_str(), &p);
+	value = strtof(str.substr(delimPos + 1).c_str(), &p);
 	if (*p)
 		value = NAN;
 }
@@ -21,7 +21,8 @@ static bool isNumber(const std::string& str) {
 	return true;
 }
 
-static void validateData(const std::string& key, const double& value) {
+static void validateData(const std::string& key, const float& value) {
+	unsigned int year, month, day;
 	size_t sep1 = key.find('-');
 	size_t sep2 = key.find('-', sep1 + 1);
 	if (sep1 == std::string::npos || sep2 == std::string::npos) throw InvalidDateException();
@@ -29,13 +30,17 @@ static void validateData(const std::string& key, const double& value) {
 	std::string monthStr = key.substr(sep1 + 1, sep2 - sep1 - 1);
 	std::string dayStr = key.substr(sep2 + 1);
 	if (!isNumber(yearStr) || !isNumber(monthStr) || !isNumber(dayStr)) throw InvalidDateException();
+	year = (unsigned int)atoi(yearStr.c_str());
+	month = (unsigned int)atoi(monthStr.c_str());
+	day = (unsigned int)atoi(dayStr.c_str());
+	if ((month < 1 || month > 12) || (day < 1 || day > 31)) throw InvalidDateException();
 	if (isnan(value)) throw InvalidValueException();
 }
 
-static void extractData(std::fstream& dataStream, std::map< std::string, double >& data) {
+static void extractData(std::fstream& dataStream, std::map< std::string, float >& data) {
 	char	lineBuffer[BUFFER_SIZE];
 	std::string key;
-	double value;
+	float value;
 
 	while (!dataStream.getline(lineBuffer, BUFFER_SIZE, '\n').eof()) {
 		splitLine(lineBuffer, key, value);
@@ -50,7 +55,7 @@ static int validateKeys(const std::string&	keysString) {
 	return FAILURE;
 }
 
-int setupData(std::map< std::string, double >& data) {
+int setupData(std::map< std::string, float >& data) {
 	std::fstream dataStream;
 	dataStream.open("data.csv", std::fstream::in);
 	if (!dataStream.good()) {
