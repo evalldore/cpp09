@@ -10,6 +10,7 @@
 #include <cmath>
 #include <sstream>
 #include <exception>
+#include <cctype>
 #define SUCCES 0
 #define FAILURE 1
 #define INVALID_DATE 2

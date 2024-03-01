@@ -10,19 +10,25 @@ static void splitLine(const std::string& str, std::string& key, double &value) {
 		value = NAN;
 }
 
-static void validateData(const std::string& key, const double& value) {
-	unsigned int year, month, day;
+static bool isNumber(const std::string& str) {
+	if (str.empty()) return false;
 
+	for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+		if (!isdigit(*it)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+static void validateData(const std::string& key, const double& value) {
 	size_t sep1 = key.find('-');
 	size_t sep2 = key.find('-', sep1 + 1);
-
+	if (sep1 == std::string::npos || sep2 == std::string::npos) throw InvalidDateException();
 	std::string yearStr = key.substr(0, sep1);
 	std::string monthStr = key.substr(sep1 + 1, sep2 - sep1 - 1);
 	std::string dayStr = key.substr(sep2 + 1);
-	year = (unsigned int)std::stoi(yearStr);
-	month = (unsigned int)std::stoi(monthStr);
-	day = (unsigned int)std::stoi(dayStr);
-	if (year == 0 || month == 0 || day == 0) throw InvalidDateException();
+	if (!isNumber(yearStr) || !isNumber(monthStr) || !isNumber(dayStr)) throw InvalidDateException();
 	if (isnan(value)) throw InvalidValueException();
 }
 
@@ -61,7 +67,7 @@ int setupData(std::map< std::string, double >& data) {
 	try {
 		extractData(dataStream, data);
 	} catch (std::exception& e) {
-		std::cerr << "EXCEPTION" << e.what() << std::endl;
+		std::cerr << "EXCEPTION" << ' ' << e.what() << std::endl;
 		return FAILURE;
 	}
 	return SUCCES;
