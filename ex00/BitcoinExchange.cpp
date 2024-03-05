@@ -81,11 +81,14 @@ int setupData(std::map< std::string, double >& data) {
 		return FAILURE;
 	try {
 		extractData(dataStream, data);
+	} catch (std::exception &e) {
+		std::cerr << "Data error: " << e.what() << std::endl;
+		return FAILURE;
 	} catch (std::string& e) {
-		std::cerr << "Data error:" << ' ' << e << std::endl;
+		std::cerr << "Data error: " << e << std::endl;
 		return FAILURE;
 	} catch (double& e) {
-		std::cerr << "Data error:" << ' ' << e << std::endl;
+		std::cerr << "Data error: " << e << std::endl;
 		return FAILURE;
 	}
 	return SUCCES;
@@ -127,6 +130,8 @@ int processInput(const char* inputPath, const std::map<std::string, double>& dat
 			if (value >= 1000.0) throw value;
 			total = getRate(data, key) * value;
 			std::cout << key << " => " << value << " = " << total << std::endl;
+		} catch (std::exception& e) {
+			std::cerr << "Error: " << e.what() << std::endl;
 		} catch (std::string& e) {
 			std::cerr << "Error: " << "bad input => " << e << std::endl;
 		} catch (double& e) {
