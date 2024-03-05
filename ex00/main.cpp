@@ -5,15 +5,14 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Invalid arguments, requires a filename" << std::endl;
 		return 1;
 	}
-	std::fstream inputStream;
-	inputStream.open(argv[1], std::fstream::in);
-	if (!inputStream.good()) {
-		std::cerr << "Couldnt open input file" << std::endl;
-		return 1;
-	}
-	std::map< std::string, float > data;
+	std::map< std::string, double > data;
 	if (setupData(data) != SUCCES) {
 		std::cerr << "Setting up data failure!" << std::endl;
 		return 1;
 	}
+	if (processInput(argv[1], data) != SUCCES) {
+		std::cerr << "Processing input failure" << std::endl;
+		return 1;
+	}
+	return 0;
 }
