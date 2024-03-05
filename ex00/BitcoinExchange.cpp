@@ -132,6 +132,7 @@ int processInput(const char* inputPath, const std::map<std::string, double>& dat
 			std::cout << key << " => " << value << " = " << total << std::endl;
 		} catch (std::exception& e) {
 			std::cerr << "Error: " << e.what() << std::endl;
+			return FAILURE;
 		} catch (std::string& e) {
 			std::cerr << "Error: " << "bad input => " << e << std::endl;
 		} catch (double& e) {
