@@ -25,7 +25,7 @@ static bool operate(const std::string& str, std::stack<int>& stack) {
 			stack.push(elements[1] - elements[0]);
 			return true;
 		case '/':
-			if (elements[1] == 0)
+			if (elements[0] == 0)
 				return false;
 			stack.push(elements[1] / elements[0]);
 			return true;
