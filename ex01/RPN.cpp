@@ -57,6 +57,7 @@ bool calc(const std::string str) {
 	}
 	if (stack.size() > 1) {
 		std::cout << "Stack isnt fully processed!" << std::endl;
+		return false;
 	}
 	std::cout << stack.top() << std::endl;
 	return true;
