@@ -12,6 +12,10 @@ static bool operate(const std::string& str, std::stack<int>& stack) {
 		std::cout << "Invalid amount of operands" << std::endl;
 		return false;
 	}
+	if (str.length() > 1) {
+		std::cout << "Invalid operator: " << str << std::endl;
+		return false;
+	}
 	int elements[2];
 	elements[0] = stack.top();
 	stack.pop();
@@ -50,6 +54,9 @@ bool calc(const std::string str) {
 		else
 			if (!operate(token, stack))
 				return false;
+	}
+	if (stack.size() > 1) {
+		std::cout << "Stack isnt fully processed!" << std::endl;
 	}
 	std::cout << stack.top() << std::endl;
 	return true;
