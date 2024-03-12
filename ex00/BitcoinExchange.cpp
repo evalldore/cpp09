@@ -70,7 +70,6 @@ static int validateKeys(const std::string&	keysString) {
 int setupData(std::map< std::string, double >& data) {
 	std::ifstream dataStream("data.csv");
 	std::string line;
-	std::vector<std::string> keysVec;
 
 	if (!dataStream.good()) {
 		std::cerr << "Couldnt open data file" << std::endl;
