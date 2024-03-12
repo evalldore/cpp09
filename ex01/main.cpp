@@ -6,6 +6,9 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Not enough arguments!" << std::endl;
 		return 1;
 	}
-	if (!calc(argv[1]))
+	if (!calc(argv[1])) {
 		std::cout << "Failed operation!" << std::endl;
+		return 1;
+	}
+	return 0;
 }
