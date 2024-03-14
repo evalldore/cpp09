@@ -17,10 +17,8 @@ static void createPairs(std::vector<int>& intVec, pair_vec_t& pairs) {
 }
 
 static void sortPairs(pair_vec_t& pairs) {
-	pair_vec_t::iterator it;
-
 	if (pairs.size() == 1) return;
-	for (it = pairs.begin(); it != pairs.end(); it++) {
+	for (pair_vec_t::iterator it = pairs.begin(); it != pairs.end(); it++) {
 		if (it->first > it->second) {
 			int temp = it->first;
 			it->first = it->second;
