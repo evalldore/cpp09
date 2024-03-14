@@ -25,5 +25,6 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Invalid parameters to initialize int vector!" << std::endl;
 		return 1;
 	}
+	mergeInsertionSort(intVec);
 	return 0;
 }
