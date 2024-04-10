@@ -2,7 +2,7 @@ NAME			:= PmergeMe
 CPPFLAGS		:= -g -Wall -Wextra -Werror
 STD				:= -std=c++98
 SRCDIR			:= src/
-SRCS			:= main.cpp PmergeMe.cpp
+SRCS			:= main.cpp
 BINDIR			:= bin/
 HEADERS			:= include/
 OBJS			:= $(addprefix $(BINDIR), $(SRCS:.cpp=.o))
