@@ -1,6 +1,8 @@
 #include "BitcoinExchange.hpp"
 
-static void splitLine(const std::string& str, std::string& key, double &value, const char * delim) {
+static bool splitLine(const std::string& str, std::string& key, double &value, const char * delim) {
+	if (str.size() == 0)
+		return FAILURE;
 	char	*p;
 	size_t delimPos = str.find(delim, 0);
 
@@ -8,6 +10,7 @@ static void splitLine(const std::string& str, std::string& key, double &value, c
 	value = strtod(str.substr(delimPos + strlen(delim)).c_str(), &p);
 	if (*p)
 		value = NAN;
+	return SUCCES;
 }
 
 static bool isNumber(const std::string& str) {
@@ -30,9 +33,9 @@ static void validateData(const std::string& key, const double& value) {
 	std::string monthStr = key.substr(sep1 + 1, sep2 - sep1 - 1);
 	std::string dayStr = key.substr(sep2 + 1);
 	if (!isNumber(yearStr) || !isNumber(monthStr) || !isNumber(dayStr)) throw key;
-	year = (unsigned int)atoi(yearStr.c_str());
-	month = (unsigned int)atoi(monthStr.c_str());
-	day = (unsigned int)atoi(dayStr.c_str());
+	year = static_cast<unsigned int>(atoi(yearStr.c_str()));
+	month = static_cast<unsigned int>(atoi(monthStr.c_str()));
+	day = static_cast<unsigned int>(atoi(dayStr.c_str()));
 	if ((month < 1 || month > 12) || (day < 1 || day > 31)) throw key;
 
 	if (month == 4 || month == 6 || month == 9 || month == 11) {
@@ -47,16 +50,18 @@ static void validateData(const std::string& key, const double& value) {
 	if (isnan(value) || value < 0.0) throw value;
 }
 
-static void extractData(std::ifstream& dataStream, std::map< std::string, double >& data) {
+static int extractData(std::ifstream& dataStream, std::map< std::string, double >& data) {
 	std::string		line;
 	std::string		key;
 	double			value;
 
 	while (std::getline(dataStream, line)) {
-		splitLine(line, key, value, ",");
+		if (splitLine(line, key, value, ",") == FAILURE)
+			return FAILURE;
 		validateData(key, value);
 		data[key] = value;
 	}
+	return SUCCES;
 }
 
 static int validateKeys(const std::string&	keysString) {
@@ -79,7 +84,8 @@ int setupData(std::map< std::string, double >& data) {
 	if (validateKeys(line) != SUCCES)
 		return FAILURE;
 	try {
-		extractData(dataStream, data);
+		if (extractData(dataStream, data) == FAILURE)
+			return FAILURE;
 	} catch (std::exception &e) {
 		std::cerr << "Data error: " << e.what() << std::endl;
 		return FAILURE;
@@ -124,7 +130,10 @@ int processInput(const char* inputPath, const std::map<std::string, double>& dat
 		return FAILURE;
 	while (std::getline(inputStream, line)) {
 		try {
-			splitLine(line, key, value, " | ");
+			if (splitLine(line, key, value, " | ") == FAILURE) {
+				std::cout << "Error: Input line is invalid!" << std::endl;
+				continue;
+			}
 			validateData(key, value);
 			if (value >= 1000.0) throw value;
 			total = getRate(data, key) * value;
